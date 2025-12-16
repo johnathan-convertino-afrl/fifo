@@ -159,7 +159,7 @@ module fifo_pipe #(
     assign r_rd_empty   = w_rd_empty[RD_SYNC_DEPTH-1] | ~rd_rstn;
     assign w_rd_en[RD_SYNC_DEPTH-1] = rd_en;
     
-    for(gen_index = 0; gen_index < RD_SYNC_DEPTH; gen_index = gen_index + 1) begin
+    for(gen_index = 0; gen_index < RD_SYNC_DEPTH; gen_index = gen_index + 1) begin : gen_RD_PIPE_PRIME_HOLDBUFFER
       if(gen_index == 0)
       begin
         holdbuffer #(
@@ -180,7 +180,7 @@ module fifo_pipe #(
           .m_data_ready(w_rd_en[gen_index]),
           .m_data_ack(1'b0)
         );
-      end else begin
+      end else begin : gen_RD_PIPE_HOLDBUFFERS
         holdbuffer #(
           .BUS_WIDTH(BYTE_WIDTH*8)
         ) inst_rd_holdbuffer (
@@ -212,7 +212,7 @@ module fifo_pipe #(
     assign w_wr_ready[WR_SYNC_DEPTH-1]  = ~wr_full;
     assign w_wr_ack[WR_SYNC_DEPTH-1]    = wr_ack;
   
-    for(gen_index = 0; gen_index < WR_SYNC_DEPTH; gen_index = gen_index + 1) begin
+    for(gen_index = 0; gen_index < WR_SYNC_DEPTH; gen_index = gen_index + 1) begin : gen_WR_PIPE_PRIME_HOLDBUFFER
       if(gen_index == 0)
       begin
         holdbuffer #(
@@ -234,7 +234,7 @@ module fifo_pipe #(
           .m_data_ready(w_wr_ready[gen_index]),
           .m_data_ack(w_wr_ack[gen_index])
         );
-      end else begin
+      end else begin : gen_WR_PIPE_HOLDBUFFERS
         holdbuffer #(
           .BUS_WIDTH(BYTE_WIDTH*8),
           .ACK_ENABLE(1)
